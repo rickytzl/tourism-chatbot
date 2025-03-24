@@ -8,7 +8,9 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-backend_url = os.getenv('BACKEND_URL', "http://localhost:8000/chat")
+BACKEND_URL = os.getenv('BACKEND_URL', "http://localhost:8000/chat")
+USERNAME = os.getenv('USERNAME', 'user')
+PASSWORD= os.getenv('PASSWORD', 'pass')
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
 
@@ -51,7 +53,7 @@ chat_layout = dmc.Center([
     prevent_initial_call=True
 )
 def login(n_clicks, username, password):
-    if username == "user" and password == "pass":
+    if username.lower() == USERNAME.lower() and password == PASSWORD:
         return chat_layout, ""
     return login_layout, "Invalid username or password."
 
@@ -69,7 +71,7 @@ def handle_chat(new_message, messages):
     updated_messages = messages + [new_message]
 
     if new_message["role"] == "user":
-        response = requests.post(backend_url, json={"user_id": "1", "message": new_message["content"]})
+        response = requests.post(BACKEND_URL, json={"user_id": "1", "message": new_message["content"]})
         bot_response = response.json().get("response", "No response")
 
         bot_msg = {"role": "assistant", "content": bot_response}
